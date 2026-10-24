@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+  # Development environment with PocketBase
+  mike-dev:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+      - "8090:8090"
+    environment:
+      - NODE_ENV=development
+      - DB_TYPE=pocketbase
+      - DATABASE_URL=http://pocketbase:8090
+      - PORT=3000
+    volumes:
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+    depends_on:
+      - pocketbase
+    networks:
+      - mike-network
+
+  # PocketBase service
+  pocketbase:
+    image: adrianmusante/pocketbase:latest
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pocketbase-data:/pocketbase
+    command: ./pocketbase serve --http-port 8090 --admin-port 8091
+    restart: unless-stopped
+    networks:
+      - mike-network
+
+networks:
+  mike-network:
+    driver: bridge

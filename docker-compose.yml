@@ -1,0 +1,44 @@
+version: '3.8'
+
+services:
+  # Main application service
+  mike-app:
+    build: 
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"  # Backend port
+      - "3001:3001"  # Frontend port (if needed)
+    environment:
+      - NODE_ENV=development
+      - DB_TYPE=sqlite
+      - DATABASE_URL=file::memory:?cache=shared
+      - PORT=3000
+    volumes:
+      - ./backend:/app/backend
+      - ./frontend:/app/frontend
+    depends_on:
+      - pocketbase
+
+  # PocketBase service for database
+  pocketbase:
+    image: adrianmusante/pocketbase:latest
+    ports:
+      - "8090:8090"
+    volumes:
+      - ./pocketbase-data:/pocketbase
+    command: ./pocketbase serve --http-port 8090 --admin-port 8091
+    restart: unless-stopped
+
+  # Alternative for SQLite development
+  sqlite-dev:
+    image: "sqlite:latest"
+    volumes:
+      - ./sqlite-data:/data
+    command: sqlite3 /data/mike.db
+
+volumes:
+  pocketbase-data:
+    driver: local
+  sqlite-data:
+    driver: local
