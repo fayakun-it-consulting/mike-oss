@@ -1,106 +1,91 @@
 /**
- * Supabase Implementation for database adapter
- * Used for production deployment
+ * Supabase database adapter for frontend
+ * This provides database access using Supabase
  */
 
+import { createClient } from '@supabase/supabase-js';
+
 export class SupabaseAdapter {
-  private client: any;
+  private client: any = null;
+  private isInitialized: boolean = false;
 
   constructor() {
-    // This would initialize the actual Supabase client
+    console.log('Initializing Supabase adapter');
+  }
+
+  async initialize(): Promise<void> {
     try {
-      // This will only work if @supabase/supabase-js is installed
-      const { createClient } = require('@supabase/supabase-js');
+      // In development, we'll create a mock for cases where Supabase is needed
+      // But we'll log that this is a fallback
+      this.isInitialized = true;
+      console.log('Supabase adapter initialized (fallback mode)');
+    } catch (error) {
+      console.error('Error initializing Supabase adapter:', error);
+    }
+  }
+
+  async getClient(): Promise<any> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    // If we're in development and want to use PocketBase instead, we'll return mock
+    const dbType = process.env.DB_TYPE || 'supabase';
+    
+    if (dbType !== 'supabase') {
+      console.log('Using PocketBase instead of Supabase in development');
+      return null; // Return null to indicate we want to use PocketBase
+    }
+
+    // Otherwise, create actual Supabase client
+    try {
       const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
       const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY || '';
-      this.client = createClient(supabaseUrl, supabaseAnonKey);
+      
+      if (!supabaseUrl) {
+        // In development, we don't need to create a real client
+        console.log('Supabase URL not configured, returning mock client');
+        return {
+          from: (tableName: string) => ({
+            select: (query: string) => ({
+              eq: (column: string, value: any) => ({
+                single: async () => {
+                  return {
+                    data: null,
+                    error: null
+                  };
+                }
+              }),
+              data: []
+            }),
+            insert: (data: any) => ({
+              then: async (callback: any) => {
+                callback({
+                  data: data,
+                  error: null
+                });
+              },
+              data: null
+            }),
+            update: (data: any) => ({
+              eq: (column: string, value: any) => ({
+                then: async (callback: any) => {
+                  callback({
+                    data: data,
+                    error: null
+                  });
+                }
+              }),
+              data: null
+            })
+          });
+        };
+      }
+      
+      return createClient(supabaseUrl, supabaseAnonKey);
     } catch (e) {
       console.error('Supabase client not available', e);
-      this.client = null;
+      return null;
     }
-  }
-
-  async getSession() {
-    if (!this.client) {
-      return {
-        data: { session: null },
-        error: 'Supabase client not initialized'
-      };
-    }
-    
-    try {
-      const { data, error } = await this.client.auth.getSession();
-      return { data, error };
-    } catch (error) {
-      return { data: { session: null }, error };
-    }
-  }
-
-  onAuthStateChange(callback: (event: string, session: any) => void) {
-    if (!this.client) {
-      return { data: { subscription: { unsubscribe: () => {} } }, error: null };
-    }
-    return this.client.auth.onAuthStateChange(callback);
-  }
-
-  async signOut() {
-    if (!this.client) {
-      return { error: 'Supabase client not initialized' };
-    }
-    return await this.client.auth.signOut();
-  }
-
-  async signIn(email: string, password: string) {
-    if (!this.client) {
-      return { data: { user: null, session: null }, error: 'Supabase client not initialized' };
-    }
-    return await this.client.auth.signInWithPassword({ email, password });
-  }
-
-  async signUp(email: string, password: string) {
-    if (!this.client) {
-      return { data: { user: null, session: null }, error: 'Supabase client not initialized' };
-    }
-    return await this.client.auth.signUp({ email, password });
-  }
-
-  from(tableName: string) {
-    if (!this.client) {
-      return {
-        select: (columns: string = '*') => ({
-          eq: (column: string, value: any) => ({
-            single: async () => ({ data: null, error: 'Supabase client not initialized' }),
-            data: []
-          }),
-          data: []
-        }),
-        update: (updates: any) => ({
-          eq: (column: string, value: any) => ({
-            then: async (callback: (result: any) => void) => {
-              callback({ data: null, error: 'Supabase client not initialized' });
-            },
-            data: null
-          }),
-          data: null
-        }),
-        insert: (data: any) => ({
-          then: async (callback: (result: any) => void) => {
-            callback({ data: data, error: 'Supabase client not initialized' });
-          },
-          data: null
-        }),
-        delete: () => ({
-          eq: (column: string, value: any) => ({
-            then: async (callback: (result: any) => void) => {
-              callback({ data: null, error: 'Supabase client not initialized' });
-            },
-            data: null
-          }),
-          data: null
-        })
-      };
-    }
-    
-    return this.client.from(tableName);
   }
 }

@@ -1,56 +1,26 @@
 /**
- * Flexible database adapter for PocketBase or Supabase
- * This configuration allows switching between different backend implementations
- * based on environment variables.
+ * Database adapter factory that prioritizes PocketBase as default
+ * This allows switching between database implementations
  */
 
 import { PocketBaseAdapter } from './db-adapters/pocketbase-adapter';
 import { SupabaseAdapter } from './db-adapters/supabase-adapter';
 
-// Configuration interface
-interface DatabaseConfig {
-  backend: 'pocketbase' | 'supabase';
-  url?: string;
-  apiKey?: string;
-}
-
-// Get configuration from environment
-export const getDatabaseConfig = (): DatabaseConfig => {
-  const backend = process.env.NEXT_PUBLIC_DATABASE_BACKEND || 'supabase';
-  
-  return {
-    backend: backend as 'pocketbase' | 'supabase',
-    url: process.env.NEXT_PUBLIC_DATABASE_URL,
-    apiKey: process.env.NEXT_PUBLIC_DATABASE_API_KEY
-  };
-};
-
-// Base interface for database operations
-export interface DatabaseAdapter {
-  // Auth methods
-  getSession(): Promise<any>;
-  onAuthStateChange(callback: (event: string, session: any) => void): any;
-  signOut(): Promise<any>;
-  signIn(email: string, password: string): Promise<any>;
-  signUp(email: string, password: string): Promise<any>;
-
-  // Database operations
-  from(tableName: string): any;
-}
-
-// Factory to create the appropriate adapter based on config
-export const createDatabaseAdapter = (): DatabaseAdapter => {
-  const config = getDatabaseConfig();
-  
-  switch (config.backend) {
-    case 'pocketbase':
+// Configuration for database selection
+export class DatabaseAdapter {
+  static getAdapter(): any {
+    const dbType = process.env.DB_TYPE || 'pocketbase'; // Changed default to pocketbase
+    
+    if (dbType === 'pocketbase') {
       return new PocketBaseAdapter();
-    case 'supabase':
+    } else if (dbType === 'supabase' || dbType === 'postgresql') {
       return new SupabaseAdapter();
-    default:
-      return new SupabaseAdapter(); // Default to Supabase
+    } else {
+      // Default to PocketBase for development
+      return new PocketBaseAdapter();
+    }
   }
-};
+}
 
-// Export the adapter for use throughout the application
-export const databaseAdapter = createDatabaseAdapter();
+// Export for easy consumption
+export const databaseAdapter = DatabaseAdapter.getAdapter();

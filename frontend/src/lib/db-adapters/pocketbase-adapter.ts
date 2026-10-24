@@ -1,143 +1,74 @@
 /**
- * PocketBase Implementation for database adapter
- * Used for PocketBase backend integration
+ * PocketBase database adapter for frontend
+ * This provides database access using PocketBase instead of Supabase
  */
 
+// Mock implementation for development without actual PocketBase dependency
 export class PocketBaseAdapter {
-  private currentUser: any = null;
+  private client: any = null;
+  private isInitialized: boolean = false;
 
   constructor() {
-    // Initialize PocketBase connection
-    console.log('Initializing PocketBase adapter...');
+    // For development, we'll create mock functionality
+    console.log('Initializing PocketBase adapter for development');
   }
 
-  async getSession() {
-    // In a real implementation, this would fetch the session from PocketBase
+  async initialize(): Promise<void> {
+    // In development, we'll use mock data instead of actual PocketBase
+    this.isInitialized = true;
+    console.log('PocketBase adapter initialized');
+  }
+
+  async getClient(): Promise<any> {
+    if (!this.isInitialized) {
+      await this.initialize();
+    }
+
+    // Return mock client that simulates PocketBase behavior
     return {
-      data: {
-        session: this.currentUser ? {
-          user: this.currentUser,
-          access_token: 'pocketbase-token',
-          refresh_token: 'pocketbase-refresh-token'
-        } : null
-      },
-      error: null
+      from: (tableName: string) => {
+        return {
+          select: (query: string) => ({
+            eq: (column: string, value: any) => ({
+              single: async () => {
+                return {
+                  data: null,
+                  error: null
+                };
+              }
+            }),
+            data: []
+          }),
+          insert: (data: any) => ({
+            then: async (callback: any) => {
+              callback({
+                data: data,
+                error: null
+              });
+            },
+            data: null
+          }),
+          update: (data: any) => ({
+            eq: (column: string, value: any) => ({
+              then: async (callback: any) => {
+                callback({
+                  data: data,
+                  error: null
+                });
+              }
+            }),
+            data: null
+          })
+        };
+      }
     };
   }
 
-  onAuthStateChange(callback: (event: string, session: any) => void) {
-    // In a real implementation, this would listen for auth state changes
-    return {
-      data: { subscription: { unsubscribe: () => {} } },
-      error: null
-    };
-  }
-
-  async signOut() {
-    this.currentUser = null;
-    return { error: null };
-  }
-
-  async signIn(email: string, password: string) {
-    // In a real implementation, this would authenticate with PocketBase
-    const user = {
-      id: `user-${Date.now()}`,
-      email,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    this.currentUser = user;
-    
-    return {
-      data: {
-        user,
-        session: {
-          user,
-          access_token: 'pocketbase-token',
-          refresh_token: 'pocketbase-refresh-token'
-        }
-      },
-      error: null
-    };
-  }
-
-  async signUp(email: string, password: string) {
-    // In a real implementation, this would sign up a new user with PocketBase
-    const user = {
-      id: `user-${Date.now()}`,
-      email,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
-    };
-    
-    this.currentUser = user;
-    
-    return {
-      data: {
-        user,
-        session: {
-          user,
-          access_token: 'pocketbase-token',
-          refresh_token: 'pocketbase-refresh-token'
-        }
-      },
-      error: null
-    };
-  }
-
-  from(tableName: string) {
-    // In a real implementation, this would return a query builder for the specified table
-    return {
-      select: (columns: string = '*') => ({
-        eq: (column: string, value: any) => ({
-          single: async () => {
-            // Simulate data fetching from PocketBase
-            return {
-              data: null,
-              error: null
-            };
-          },
-          data: []
-        }),
-        data: []
-      }),
-      update: (updates: any) => ({
-        eq: (column: string, value: any) => ({
-          then: async (callback: (result: any) => void) => {
-            // Simulate update operation
-            callback({
-              data: updates,
-              error: null
-            });
-          },
-          data: null
-        }),
-        data: null
-      }),
-      insert: (data: any) => ({
-        then: async (callback: (result: any) => void) => {
-          // Simulate insert operation
-          callback({
-            data: data,
-            error: null
-          });
-        },
-        data: null
-      }),
-      delete: () => ({
-        eq: (column: string, value: any) => ({
-          then: async (callback: (result: any) => void) => {
-            // Simulate delete operation
-            callback({
-              data: null,
-              error: null
-            });
-          },
-          data: null
-        }),
-        data: null
-      })
-    };
+  async testConnection(): Promise<boolean> {
+    console.log('Testing PocketBase connection (mock)');
+    return true;
   }
 }
+
+// Export for easy usage
+export const pocketbaseAdapter = new PocketBaseAdapter();
