@@ -27,7 +27,7 @@ export class DatabaseConfigurationFactory {
    */
   static fromEnvironment(): DatabaseConfiguration {
     return {
-      type: (process.env.DB_TYPE || 'postgresql') as 'sqlite' | 'postgresql',
+      type: (process.env.DB_TYPE || 'sqlite') as 'sqlite' | 'postgresql',
       url: process.env.DATABASE_URL,
       pooling: {
         enabled: process.env.DB_POOLING !== 'false',
@@ -47,11 +47,9 @@ export class DatabaseConfigurationFactory {
    */
   static default(): DatabaseConfiguration {
     return {
-      type: 'postgresql',
+      type: 'sqlite', // Changed to SQLite as default
       pooling: {
-        enabled: true,
-        min: 2,
-        max: 10
+        enabled: false
       },
       logging: {
         enabled: true,

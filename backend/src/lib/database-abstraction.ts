@@ -75,7 +75,7 @@ export class DatabaseServiceFactory {
   }
   
   static createFromEnvironment(): DatabaseService {
-    const type = process.env.DB_TYPE as 'sqlite' | 'postgresql' || 'postgresql';
+    const type = process.env.DB_TYPE as 'sqlite' | 'postgresql' || 'sqlite'; // Changed default to SQLite
     const url = process.env.DATABASE_URL;
     
     return this.create({
