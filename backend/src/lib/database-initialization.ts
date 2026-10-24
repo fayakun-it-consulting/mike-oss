@@ -5,8 +5,8 @@
 
 import { DatabaseService } from "./database-abstraction";
 import { DatabaseConfig } from "./database-config";
-import { SqliteDatabaseConnection } from "./sqlite-connection";
 import { PostgreSqlDatabaseConnection } from "./postgresql-connection";
+import { PocketBaseDatabaseConnection } from "./pocketbase-connection";
 import { DatabaseServiceFactory } from "./database-service-factory";
 
 // Database schema definition for initialization
@@ -83,7 +83,8 @@ export class DatabaseInitializationService {
     // In a real implementation, this would execute SQL statements to create tables
     console.log('Creating database schema...');
     
-    // This would be replaced with actual schema creation SQL
+    // This would be replaced with actual schema creation SQL for PostgreSQL
+    // For PocketBase, this might be handled differently (collections, etc.)
     const schemaSql = [
       // User profiles table
       `CREATE TABLE IF NOT EXISTS user_profiles (

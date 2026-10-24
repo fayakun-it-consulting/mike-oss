@@ -1,10 +1,10 @@
 /**
  * Database configuration for Pandino OSGi migration
- * This file provides configuration for switching between SQLite and PostgreSQL.
+ * This file provides configuration for switching between PostgreSQL and PocketBase.
  */
 
 export interface DatabaseConfiguration {
-  type: 'sqlite' | 'postgresql';
+  type: 'postgresql' | 'pocketbase';
   url?: string;
   connectionOptions?: {
     [key: string]: any;
@@ -27,7 +27,7 @@ export class DatabaseConfigurationFactory {
    */
   static fromEnvironment(): DatabaseConfiguration {
     return {
-      type: (process.env.DB_TYPE || 'sqlite') as 'sqlite' | 'postgresql',
+      type: (process.env.DB_TYPE || 'postgresql') as 'postgresql' | 'pocketbase',
       url: process.env.DATABASE_URL,
       pooling: {
         enabled: process.env.DB_POOLING !== 'false',
@@ -47,26 +47,9 @@ export class DatabaseConfigurationFactory {
    */
   static default(): DatabaseConfiguration {
     return {
-      type: 'sqlite', // Changed to SQLite as default
+      type: 'postgresql', // Changed to PostgreSQL as default
       pooling: {
-        enabled: false
-      },
-      logging: {
-        enabled: true,
-        level: 'info'
-      }
-    };
-  }
-  
-  /**
-   * Create SQLite configuration
-   */
-  static sqlite(url: string): DatabaseConfiguration {
-    return {
-      type: 'sqlite',
-      url,
-      pooling: {
-        enabled: false
+        enabled: true
       },
       logging: {
         enabled: true,
@@ -86,6 +69,23 @@ export class DatabaseConfigurationFactory {
         enabled: true,
         min: 2,
         max: 10
+      },
+      logging: {
+        enabled: true,
+        level: 'info'
+      }
+    };
+  }
+  
+  /**
+   * Create PocketBase configuration
+   */
+  static pocketbase(url: string): DatabaseConfiguration {
+    return {
+      type: 'pocketbase',
+      url,
+      pooling: {
+        enabled: false
       },
       logging: {
         enabled: true,

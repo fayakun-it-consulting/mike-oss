@@ -1,26 +1,25 @@
 /**
- * Flexible database adapter for SQLite, PocketBase, or Supabase
+ * Flexible database adapter for PocketBase or Supabase
  * This configuration allows switching between different backend implementations
  * based on environment variables.
  */
 
-import { SQLiteAdapter } from './db-adapters/sqlite-adapter';
 import { PocketBaseAdapter } from './db-adapters/pocketbase-adapter';
 import { SupabaseAdapter } from './db-adapters/supabase-adapter';
 
 // Configuration interface
 interface DatabaseConfig {
-  backend: 'sqlite' | 'pocketbase' | 'supabase';
+  backend: 'pocketbase' | 'supabase';
   url?: string;
   apiKey?: string;
 }
 
 // Get configuration from environment
 export const getDatabaseConfig = (): DatabaseConfig => {
-  const backend = process.env.NEXT_PUBLIC_DATABASE_BACKEND || 'sqlite';
+  const backend = process.env.NEXT_PUBLIC_DATABASE_BACKEND || 'supabase';
   
   return {
-    backend: backend as 'sqlite' | 'pocketbase' | 'supabase',
+    backend: backend as 'pocketbase' | 'supabase',
     url: process.env.NEXT_PUBLIC_DATABASE_URL,
     apiKey: process.env.NEXT_PUBLIC_DATABASE_API_KEY
   };
@@ -44,14 +43,12 @@ export const createDatabaseAdapter = (): DatabaseAdapter => {
   const config = getDatabaseConfig();
   
   switch (config.backend) {
-    case 'sqlite':
-      return new SQLiteAdapter();
     case 'pocketbase':
       return new PocketBaseAdapter();
     case 'supabase':
       return new SupabaseAdapter();
     default:
-      return new SQLiteAdapter(); // Default to SQLite
+      return new SupabaseAdapter(); // Default to Supabase
   }
 };
 

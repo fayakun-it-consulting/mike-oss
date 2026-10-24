@@ -57,11 +57,8 @@ npm run lint --prefix frontend
 
 ## Database Options
 
-### Default: SQLite (Development)
-- Uses in-memory SQLite for fast development
-- `file::memory:?cache=shared`
-
-### Alternative: PostgreSQL (Production)
+### Default: PostgreSQL (Production)
+- Uses PostgreSQL for production environments
 - Supabase-compatible PostgreSQL
 - Requires `SUPABASE_URL` and `SUPABASE_SECRET_KEY`
 
@@ -88,9 +85,9 @@ docker-compose -f docker-compose-dev.yml up -d
 ### Environment Variables
 
 ```bash
-# Development with SQLite (default)
-export DB_TYPE=sqlite
-export DATABASE_URL=file::memory:?cache=shared
+# Development with PostgreSQL (default)
+export DB_TYPE=postgresql
+export DATABASE_URL=postgresql://user:password@localhost:5432/database
 
 # Development with PocketBase
 export DB_TYPE=pocketbase
@@ -103,7 +100,7 @@ export DATABASE_URL=http://localhost:8090
 
 This project now supports Pandino OSGi architecture:
 
-1. **Database Abstraction Layer** - Supports SQLite, PostgreSQL, and PocketBase
+1. **Database Abstraction Layer** - Supports PostgreSQL and PocketBase
 2. **Component-Based Services** - All CRUD operations implemented
 3. **TypeScript Integration** - Full TypeScript support
 4. **Transaction Management** - Proper transaction handling
@@ -113,7 +110,7 @@ This project now supports Pandino OSGi architecture:
 - ✅ Database abstraction implemented
 - ✅ CRUD components for all services
 - ✅ Pandino OSGi component patterns
-- ✅ SQLite as default for development
+- ✅ PostgreSQL as default for production
 - ✅ PocketBase integration support
 
 ## License

@@ -1,12 +1,12 @@
 /**
  * Database abstraction layer for Pandino OSGi architecture.
- * This layer allows switching between SQLite and PostgreSQL databases
+ * This layer allows switching between PostgreSQL and PocketBase databases
  * while maintaining consistent component interfaces.
  */
 
 // Define common database interface
 export interface DatabaseConfig {
-  type: 'sqlite' | 'postgresql';
+  type: 'postgresql' | 'pocketbase';
   url?: string;
   connection?: any;
   options?: {
@@ -73,45 +73,13 @@ export class DatabaseAbstraction {
     // This would be implemented in a Pandino component environment
     // For now we're creating the abstraction structure
     
-    if (this.config.type === 'sqlite') {
-      return this.createSqliteService();
-    } else if (this.config.type === 'postgresql') {
+    if (this.config.type === 'postgresql') {
       return this.createPostgresqlService();
+    } else if (this.config.type === 'pocketbase') {
+      return this.createPocketbaseService();
     }
     
     throw new Error(`Unsupported database type: ${this.config.type}`);
-  }
-  
-  private createSqliteService(): DatabaseService {
-    // In a real Pandino implementation, this would be injected as a service
-    return {
-      init: async (config: DatabaseConfig) => {
-        // SQLite initialization logic
-        console.log('Initializing SQLite database');
-      },
-      
-      execute: async (operation: DatabaseOperation) => {
-        // SQLite query execution
-        console.log(`Executing SQLite query: ${operation.query}`);
-        return { success: true };
-      },
-      
-      beginTransaction: async () => {
-        console.log('Starting SQLite transaction');
-      },
-      
-      commit: async () => {
-        console.log('Committing SQLite transaction');
-      },
-      
-      rollback: async () => {
-        console.log('Rolling back SQLite transaction');
-      },
-      
-      close: async () => {
-        console.log('Closing SQLite connection');
-      }
-    };
   }
   
   private createPostgresqlService(): DatabaseService {
@@ -145,6 +113,38 @@ export class DatabaseAbstraction {
       }
     };
   }
+  
+  private createPocketbaseService(): DatabaseService {
+    // In a real Pandino implementation, this would be injected as a service
+    return {
+      init: async (config: DatabaseConfig) => {
+        // PocketBase initialization logic
+        console.log('Initializing PocketBase database');
+      },
+      
+      execute: async (operation: DatabaseOperation) => {
+        // PocketBase query execution
+        console.log(`Executing PocketBase query: ${operation.query}`);
+        return { success: true };
+      },
+      
+      beginTransaction: async () => {
+        console.log('Starting PocketBase transaction');
+      },
+      
+      commit: async () => {
+        console.log('Committing PocketBase transaction');
+      },
+      
+      rollback: async () => {
+        console.log('Rolling back PocketBase transaction');
+      },
+      
+      close: async () => {
+        console.log('Closing PocketBase connection');
+      }
+    };
+  }
 }
 
 // Database factory for Pandino services
@@ -154,7 +154,7 @@ export class DatabaseFactory {
   }
   
   static createFromEnv(): DatabaseAbstraction {
-    const type = process.env.DB_TYPE as 'sqlite' | 'postgresql' || 'postgresql';
+    const type = process.env.DB_TYPE as 'postgresql' | 'pocketbase' || 'postgresql';
     const url = process.env.DATABASE_URL;
     
     return new DatabaseAbstraction({

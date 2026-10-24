@@ -5,8 +5,8 @@
 
 import { DatabaseService } from "./database-abstraction";
 import { DatabaseConfig } from "./database-config";
-import { SqliteDatabaseConnection } from "./sqlite-connection";
 import { PostgreSqlDatabaseConnection } from "./postgresql-connection";
+import { PocketBaseDatabaseConnection } from "./pocketbase-connection";
 
 export class DatabaseServiceFactory {
   /**
@@ -14,10 +14,10 @@ export class DatabaseServiceFactory {
    */
   static create(config: DatabaseConfig): DatabaseService {
     switch (config.type) {
-      case 'sqlite':
-        return new SqliteDatabaseConnection(config);
       case 'postgresql':
         return new PostgreSqlDatabaseConnection(config);
+      case 'pocketbase':
+        return new PocketBaseDatabaseConnection(config);
       default:
         throw new Error(`Unsupported database type: ${config.type}`);
     }
@@ -25,10 +25,10 @@ export class DatabaseServiceFactory {
 
   /**
    * Create a database service from environment variables
-   * Defaults to SQLite for development
+   * Defaults to PostgreSQL for production
    */
   static createFromEnvironment(): DatabaseService {
-    const type = process.env.DB_TYPE as 'sqlite' | 'postgresql' || 'sqlite';
+    const type = process.env.DB_TYPE as 'postgresql' | 'pocketbase' || 'postgresql';
     const url = process.env.DATABASE_URL;
     
     const config: DatabaseConfig = {
@@ -43,8 +43,8 @@ export class DatabaseServiceFactory {
    * Create a database service with default configuration
    */
   static createDefault(): DatabaseService {
-    const type = 'sqlite'; // Default to SQLite
-    const url = process.env.DATABASE_URL || 'file::memory:?cache=shared';
+    const type = 'postgresql'; // Default to PostgreSQL
+    const url = process.env.DATABASE_URL;
     
     const config: DatabaseConfig = {
       type,
