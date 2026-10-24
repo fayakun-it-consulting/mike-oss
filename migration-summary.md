@@ -3,7 +3,7 @@
 ## Migration Approach
 
 ### Objective
-Migrate Mike project to use Pandino OSGi framework while maintaining all existing functionality.
+Migrate Mike project to use Pandino OSGi framework with TypeScript/React while maintaining all existing functionality.
 
 ### Migration Strategy
 - **Incremental**: Convert components gradually
@@ -23,18 +23,18 @@ Migrate Mike project to use Pandino OSGi framework while maintaining all existin
    - Ensure transaction management
 
 3. **Frontend Adaptation**
-   - Maintain Next.js development
+   - Maintain Next.js/TypeScript development
    - Integrate OSGi service discovery
    - Preserve existing UI components
 
 ## Implementation Checklist
 
 ### Backend Migration
-- [ ] Set up OSGi runtime environment
+- [ ] Set up OSGi runtime environment (TypeScript/Node.js)
 - [ ] Convert service interfaces to OSGi annotations
 - [ ] Implement database access with JDBC
 - [ ] Replace Express routes with OSGi services
-- [ ] Add OSGi service registration
+- [ ] Add OSgi service registration
 
 ### Frontend Migration
 - [ ] Adapt React components for OSGi
@@ -52,11 +52,11 @@ Migrate Mike project to use Pandino OSGi framework while maintaining all existin
 
 - Pandino Framework Documentation: https://github.com/BlackBeltTechnology/pandino
 - OSGi Specification: https://osgi.org
-- Spring Boot Integration: https://spring.io/projects/spring-boot
+- TypeScript Integration: https://typescriptlang.org
 
 ## Next Steps
 
-1. Create Maven configuration
+1. Create TypeScript configuration
 2. Implement OSGi service definitions
 3. Convert existing backend services
 4. Integrate with frontend components

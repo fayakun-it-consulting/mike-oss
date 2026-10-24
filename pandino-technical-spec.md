@@ -2,7 +2,7 @@
 
 ## Introduction
 
-This specification outlines the technical requirements and implementation details for migrating the Mike project from its current Node.js/Express architecture to a Pandino OSGi-based architecture.
+This specification outlines the technical requirements and implementation details for migrating the Mike project from its current Node.js/Express architecture to a Pandino OSGi-based architecture with TypeScript/React support.
 
 ## Architecture Overview
 
@@ -14,7 +14,7 @@ This specification outlines the technical requirements and implementation detail
    - Service registration and injection
 
 2. **Data Access Layer**
-   - JPA/Hibernate integration
+   - TypeScript/JDBC integration
    - PostgreSQL connection management
    - Transaction management
 
@@ -42,12 +42,12 @@ backend/
 backend/
 ├── src/
 │   ├── main/
-│   │   ├── java/        # Java OSGi bundles
+│   │   ├── ts/          # TypeScript OSGi bundles
 │   │   ├── resources/   # OSGi configuration
 │   │   └── osgi/        # OSGi service definitions
 │   └── test/
-│       └── java/        # Test bundles
-├── pom.xml             # Maven build configuration
+│       └── ts/          # Test bundles
+├── package.json       # TypeScript/Node.js dependencies
 └── src/main/resources/
     └── META-INF/
         └── spring/     # Spring configuration
@@ -64,7 +64,7 @@ backend/
 
 2. **Bundle Creation**
    - Create OSGi bundles
-   - Configure Maven dependencies
+   - Configure TypeScript dependencies
    - Set up OSGi manifest files
 
 3. **Database Integration**
@@ -92,8 +92,8 @@ backend/
 ## Key Technical Changes
 
 ### Dependency Management
-- From Node.js packages to Maven dependencies
-- OSGi service dependencies
+- From Node.js packages to OSGi dependencies
+- TypeScript service dependencies
 - Spring Boot integration
 
 ### Configuration
@@ -110,7 +110,7 @@ backend/
 
 ### Database Integration
 - PostgreSQL connection manager
-- JPA entity mappings
+- TypeScript entity mappings
 - Transaction management
 
 ### API Endpoints

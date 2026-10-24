@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document outlines the planned migration from the current architecture to a Pandino OSGi-based architecture using BlackBeltTechnology's Pandino framework.
+This document outlines the planned migration from the current architecture to a Pandino OSGi-based architecture using BlackBeltTechnology's Pandino framework with TypeScript/React support.
 
 ## Current Architecture
 
@@ -22,7 +22,7 @@ This document outlines the planned migration from the current architecture to a 
 ### Backend Migration
 1. **Framework Migration**
    - Replace Node.js/Express with Pandino OSGi framework
-   - Use Spring Boot-based Pandino distribution
+   - Use TypeScript-based Pandino distribution
    - Implement OSGi services for core functionality
 
 2. **Service Architecture**
@@ -51,7 +51,7 @@ This document outlines the planned migration from the current architecture to a 
 ### Phase 1: Foundation Setup
 - Create OSGi bundle structure
 - Configure Pandino runtime environment
-- Set up dependency management
+- Set up TypeScript/React development
 - Implement basic service interfaces
 
 ### Phase 2: Backend Services Migration
@@ -75,8 +75,7 @@ This document outlines the planned migration from the current architecture to a 
 ## Technical Requirements
 
 ### Backend Requirements
-- Pandino OSGi runtime
-- Spring Boot integration
+- Pandino OSGi runtime (TypeScript/Node.js based)
 - PostgreSQL database
 - OSGi service management
 - RESTful service endpoints
