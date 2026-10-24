@@ -58,3 +58,60 @@ npm run lint --prefix frontend
 ## License
 
 AGPL-3.0-only. See `LICENSE`.
+# Database Backend Configuration
+
+This project supports multiple database backends for flexibility in development and deployment:
+
+## Available Backends
+
+1. **SQLite** - For local development (default)
+2. **PocketBase** - Single binary solution for development
+3. **Supabase** - Production database solution
+
+## Configuration
+
+Set the `NEXT_PUBLIC_DATABASE_BACKEND` environment variable to choose your backend:
+
+```bash
+# For SQLite (development) - default
+NEXT_PUBLIC_DATABASE_BACKEND=sqlite
+
+# For PocketBase (single binary)
+NEXT_PUBLIC_DATABASE_BACKEND=pocketbase
+NEXT_PUBLIC_DATABASE_URL=http://localhost:8090
+
+# For Supabase (production)
+NEXT_PUBLIC_DATABASE_BACKEND=supabase
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-anon-key
+SUPABASE_SECRET_KEY=your-service-role-key
+```
+
+## How It Works
+
+The system uses a flexible adapter pattern that:
+- Automatically selects the appropriate backend based on configuration
+- Provides the same interface to all frontend components
+- Maintains compatibility across different database backends
+- Allows easy switching between development and production configurations
+
+## Development Setup
+
+For local development with SQLite:
+1. No additional setup needed - SQLite is enabled by default
+2. All authentication and database operations work locally
+
+For PocketBase development:
+1. Install PocketBase: https://pocketbase.io/docs/
+2. Run PocketBase server: `./pocketbase serve`
+3. Set `NEXT_PUBLIC_DATABASE_BACKEND=pocketbase` in your `.env.local`
+
+## Production Deployment
+
+For production with Supabase:
+1. Create a Supabase project
+2. Configure your Supabase credentials
+3. Set `NEXT_PUBLIC_DATABASE_BACKEND=supabase`
+4. Deploy your frontend to Next.js with Supabase integration
+
+The system maintains full compatibility across all backends, so your frontend code remains unchanged regardless of which backend you choose.

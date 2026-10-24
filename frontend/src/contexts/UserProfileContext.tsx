@@ -8,7 +8,7 @@ import React, {
     ReactNode,
     useCallback,
 } from "react";
-import { supabase } from "@/lib/supabase";
+import { databaseAdapter } from "@/lib/database-adapter";
 import { useAuth } from "@/contexts/AuthContext";
 
 interface UserProfile {
@@ -51,7 +51,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
 
     const loadProfile = useCallback(async (userId: string) => {
         try {
-            const { data, error } = await supabase
+            const { data, error } = await databaseAdapter
                 .from("user_profiles")
                 .select("*")
                 .eq("user_id", userId)
@@ -115,7 +115,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
 
                 // 2. Update database in background if needed
                 if (shouldUpdateDb) {
-                    supabase
+                    databaseAdapter
                         .from("user_profiles")
                         .update({
                             message_credits_used: 0,
@@ -171,7 +171,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
             }
 
             try {
-                const { error } = await supabase
+                const { error } = await databaseAdapter
                     .from("user_profiles")
                     .update({
                         display_name: displayName,
@@ -196,7 +196,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
         async (organisation: string): Promise<boolean> => {
             if (!user) return false;
             try {
-                const { error } = await supabase
+                const { error } = await databaseAdapter
                     .from("user_profiles")
                     .update({
                         organisation,
@@ -224,7 +224,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
             const dbField = field === "tabularModel" ? "tabular_model" : "";
             if (!dbField) return false;
             try {
-                const { error } = await supabase
+                const { error } = await databaseAdapter
                     .from("user_profiles")
                     .update({
                         [dbField]: value,
@@ -255,7 +255,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
                 provider === "claude" ? "claudeApiKey" : "geminiApiKey";
             const normalized = value?.trim() ? value.trim() : null;
             try {
-                const { error } = await supabase
+                const { error } = await databaseAdapter
                     .from("user_profiles")
                     .update({
                         [dbField]: normalized,
@@ -293,7 +293,7 @@ export function UserProfileProvider({ children }: { children: ReactNode }) {
         try {
             const newCreditsUsed = profile.messageCreditsUsed + 1;
 
-            const { error } = await supabase
+            const { error } = await databaseAdapter
                 .from("user_profiles")
                 .update({
                     message_credits_used: newCreditsUsed,

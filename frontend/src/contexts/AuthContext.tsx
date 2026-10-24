@@ -7,7 +7,7 @@ import React, {
     useState,
     ReactNode,
 } from "react";
-import { supabase } from "@/lib/supabase";
+import { databaseAdapter } from "@/lib/database-adapter";
 
 interface User {
     id: string;
@@ -40,36 +40,38 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
 
         const checkUser = async () => {
-            const {
-                data: { session },
-            } = await supabase.auth.getSession();
+            const { data, error } = await databaseAdapter.getSession();
 
-            if (session?.user) {
+            if (data?.session?.user) {
                 setUser({
-                    id: session.user.id,
-                    email: session.user.email || "",
+                    id: data.session.user.id,
+                    email: data.session.user.email || "",
                 });
-                ensureProfile(session.access_token);
+                if (data.session.access_token) {
+                    ensureProfile(data.session.access_token);
+                }
             }
             setAuthLoading(false);
         };
 
         checkUser();
 
-        const {
-            data: { subscription },
-        } = supabase.auth.onAuthStateChange(async (_event, session) => {
-            if (session?.user) {
-                setUser({
-                    id: session.user.id,
-                    email: session.user.email || "",
-                });
-                ensureProfile(session.access_token);
-            } else {
-                setUser(null);
+        const { data: { subscription } } = databaseAdapter.onAuthStateChange(
+            async (_event, session) => {
+                if (session?.user) {
+                    setUser({
+                        id: session.user.id,
+                        email: session.user.email || "",
+                    });
+                    if (session.access_token) {
+                        ensureProfile(session.access_token);
+                    }
+                } else {
+                    setUser(null);
+                }
+                setAuthLoading(false);
             }
-            setAuthLoading(false);
-        });
+        );
 
         return () => {
             subscription.unsubscribe();
@@ -77,7 +79,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }, []);
 
     const signOut = async () => {
-        await supabase.auth.signOut();
+        await databaseAdapter.signOut();
         setUser(null);
     };
 
