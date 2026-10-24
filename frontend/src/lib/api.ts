@@ -321,3 +321,10 @@ export function fetchConstitutionNode(
 ): Promise<ConstitutionNodeResponse> {
     return request<ConstitutionNodeResponse>(`/constitution/${slug}`);
 }
+
+// Project Timeline Functions
+export async function fetchProjectTimeline(projectId: string) {
+  const res = await fetch(`${API_BASE_URL}/api/projects/${projectId}/timeline`);
+  if (!res.ok) throw new Error('Failed to load timeline');
+  return res.json(); // expects an array of {id, name, start, end}
+}

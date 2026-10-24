@@ -583,6 +583,44 @@ projectsRouter.patch("/:projectId/documents/:documentId/folder", requireAuth, as
   res.json(data);
 });
 
+// GET /projects/:projectId/timeline
+projectsRouter.get("/:projectId/timeline", requireAuth, async (req, res) => {
+  const userId = res.locals.userId as string;
+  const userEmail = res.locals.userEmail as string | undefined;
+  const { projectId } = req.params;
+  const db = createServerSupabase();
+
+  const access = await checkProjectAccess(projectId, userId, userEmail, db);
+  if (!access.ok)
+    return void res.status(404).json({ detail: "Project not found" });
+
+  try {
+    // Fetch timeline events for this project
+    const { data: timelineEvents, error } = await db
+      .from("project_timeline_events")
+      .select("*")
+      .eq("project_id", projectId)
+      .order("start", { ascending: true });
+    
+    if (error) {
+      throw new Error(error.message);
+    }
+
+    // Format the response to match the expected structure
+    const formattedEvents = timelineEvents.map(event => ({
+      id: event.id,
+      name: event.name,
+      start: event.start.toISOString(),
+      end: event.end.toISOString()
+    }));
+
+    res.json(formattedEvents);
+  } catch (error) {
+    console.error('Error fetching timeline:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 export async function handleDocumentUpload(
   req: import("express").Request,
   res: import("express").Response,
