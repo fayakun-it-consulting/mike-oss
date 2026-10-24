@@ -1,4 +1,4 @@
-# Mike
+# Mike Open-Source Project
 
 Open-source release containing the Mike frontend and backend.
 
@@ -6,7 +6,7 @@ Open-source release containing the Mike frontend and backend.
 
 - `frontend/` - Next.js application
 - `backend/` - Express API, Supabase access, document processing, and migrations
-- `backend/migrations/000_one_shot_schema.sql` - one-shot Supabase schema for fresh databases
+- `backend/migrations/` - Database schema migrations
 
 ## Setup
 
@@ -55,63 +55,75 @@ npm run build --prefix frontend
 npm run lint --prefix frontend
 ```
 
+## Database Options
+
+### Default: SQLite (Development)
+- Uses in-memory SQLite for fast development
+- `file::memory:?cache=shared`
+
+### Alternative: PostgreSQL (Production)
+- Supabase-compatible PostgreSQL
+- Requires `SUPABASE_URL` and `SUPABASE_SECRET_KEY`
+
+### Alternative: PocketBase (Docker)
+- Run with Docker: `docker run -d --name pocketbase -p 8090:8090 adrianmusante/pocketbase:latest`
+- Use: `DB_TYPE=pocketbase` and `DATABASE_URL=http://localhost:8090`
+
+## Development with Docker
+
+### Quick Start
+
+```bash
+# Start PocketBase for alternative database
+docker run -d \
+  --name pocketbase \
+  -p 8090:8090 \
+  -v $(pwd)/pocketbase-data:/pocketbase \
+  adrianmusante/pocketbase:latest
+
+# Start the application
+docker-compose -f docker-compose-dev.yml up -d
+```
+
+### Environment Variables
+
+```bash
+# Development with SQLite (default)
+export DB_TYPE=sqlite
+export DATABASE_URL=file::memory:?cache=shared
+
+# Development with PocketBase
+export DB_TYPE=pocketbase
+export DATABASE_URL=http://localhost:8090
+```
+
+## Migration to Pandino OSGi
+
+### Architecture Overview
+
+This project now supports Pandino OSGi architecture:
+
+1. **Database Abstraction Layer** - Supports SQLite, PostgreSQL, and PocketBase
+2. **Component-Based Services** - All CRUD operations implemented
+3. **TypeScript Integration** - Full TypeScript support
+4. **Transaction Management** - Proper transaction handling
+
+### Migration Status
+
+- ✅ Database abstraction implemented
+- ✅ CRUD components for all services
+- ✅ Pandino OSGi component patterns
+- ✅ SQLite as default for development
+- ✅ PocketBase integration support
+
 ## License
 
 AGPL-3.0-only. See `LICENSE`.
-# Database Backend Configuration
 
-This project supports multiple database backends for flexibility in development and deployment:
+## Contributing
 
-## Available Backends
+We welcome contributions to this open-source project! Please see our contribution guidelines for more information.
 
-1. **SQLite** - For local development (default)
-2. **PocketBase** - Single binary solution for development
-3. **Supabase** - Production database solution
+## Contact
 
-## Configuration
-
-Set the `NEXT_PUBLIC_DATABASE_BACKEND` environment variable to choose your backend:
-
-```bash
-# For SQLite (development) - default
-NEXT_PUBLIC_DATABASE_BACKEND=sqlite
-
-# For PocketBase (single binary)
-NEXT_PUBLIC_DATABASE_BACKEND=pocketbase
-NEXT_PUBLIC_DATABASE_URL=http://localhost:8090
-
-# For Supabase (production)
-NEXT_PUBLIC_DATABASE_BACKEND=supabase
-NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY=your-anon-key
-SUPABASE_SECRET_KEY=your-service-role-key
-```
-
-## How It Works
-
-The system uses a flexible adapter pattern that:
-- Automatically selects the appropriate backend based on configuration
-- Provides the same interface to all frontend components
-- Maintains compatibility across different database backends
-- Allows easy switching between development and production configurations
-
-## Development Setup
-
-For local development with SQLite:
-1. No additional setup needed - SQLite is enabled by default
-2. All authentication and database operations work locally
-
-For PocketBase development:
-1. Install PocketBase: https://pocketbase.io/docs/
-2. Run PocketBase server: `./pocketbase serve`
-3. Set `NEXT_PUBLIC_DATABASE_BACKEND=pocketbase` in your `.env.local`
-
-## Production Deployment
-
-For production with Supabase:
-1. Create a Supabase project
-2. Configure your Supabase credentials
-3. Set `NEXT_PUBLIC_DATABASE_BACKEND=supabase`
-4. Deploy your frontend to Next.js with Supabase integration
-
-The system maintains full compatibility across all backends, so your frontend code remains unchanged regardless of which backend you choose.
+For questions or support, please open an issue on the GitHub repository.
