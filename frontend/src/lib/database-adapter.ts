@@ -9,7 +9,7 @@ import { SupabaseAdapter } from './db-adapters/supabase-adapter';
 // Configuration for database selection
 export class DatabaseAdapter {
   static getAdapter(): any {
-    const dbType = process.env.DB_TYPE || 'pocketbase'; // Changed default to pocketbase
+    const dbType = process.env.NEXT_PUBLIC_DATABASE_BACKEND || 'pocketbase'; // Changed default to pocketbase
     
     if (dbType === 'pocketbase') {
       return new PocketBaseAdapter();
