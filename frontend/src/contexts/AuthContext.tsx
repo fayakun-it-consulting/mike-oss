@@ -8,6 +8,7 @@ import React, {
     ReactNode,
 } from "react";
 import { databaseAdapter } from "@/lib/database-adapter";
+import { authAdapter } from "@/lib/auth-adapter";
 
 interface User {
     id: string;
@@ -40,48 +41,59 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         };
 
         const checkUser = async () => {
-            const { data, error } = await databaseAdapter.getSession();
+            try {
+                const session = await authAdapter.getCurrentSession();
 
-            if (data?.session?.user) {
-                setUser({
-                    id: data.session.user.id,
-                    email: data.session.user.email || "",
-                });
-                if (data.session.access_token) {
-                    ensureProfile(data.session.access_token);
-                }
-            }
-            setAuthLoading(false);
-        };
-
-        checkUser();
-
-        const { data: { subscription } } = databaseAdapter.onAuthStateChange(
-            async (_event, session) => {
-                if (session?.user) {
+                if (session && session.user) {
                     setUser({
                         id: session.user.id,
                         email: session.user.email || "",
                     });
-                    if (session.access_token) {
-                        ensureProfile(session.access_token);
+                    
+                    // Explicitly type-cast or enforce that this resolves to string | null
+                    const token: string | null = await authAdapter.getToken();
+                    
+                    // Only execute if token is a valid string, protecting against null values
+                    if (token) {
+                        await ensureProfile(token);
                     }
-                } else {
-                    setUser(null);
                 }
+            } catch (e) {
+                console.error("Initial auth check failed:", e);
+            } finally {
                 setAuthLoading(false);
             }
-        );
+        };
 
+        checkUser();
+
+        const unsubscribe = authAdapter.onAuthStateChange((session) => {
+        if (session?.user) {
+            setUser(session.user);
+            } else {
+            setUser(null);
+            }
+            setAuthLoading(false);
+        });
+
+        // This cleans up memory safely regardless of Supabase or PocketBase being active
         return () => {
-            subscription.unsubscribe();
+            if (unsubscribe) unsubscribe();
         };
     }, []);
 
     const signOut = async () => {
-        await databaseAdapter.signOut();
-        setUser(null);
+        try {
+            // Call our unified authAdapter layer instead of separate database tools
+            await authAdapter.signOut();
+        } catch (e) {
+            console.error("Failed to sign out user session:", e);
+        } finally {
+            // Explicitly reset local React state values regardless of structural errors
+            setUser(null);
+        }
     };
+
 
     return (
         <AuthContext.Provider

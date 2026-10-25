@@ -1,8 +1,10 @@
 import { NextRequest } from 'next/server';
+import { authAdapter } from './auth-adapter';
 
 /**
- * Extract and validate user from Supabase JWT token
+ * Extract and validate user from JWT token
  * Returns user info if valid, null if invalid or missing
+ * This function uses the database-agnostic auth adapter
  *
  * @param request NextRequest with Authorization header
  * @returns User object with email and id, or null
@@ -24,30 +26,8 @@ export async function getUserFromRequest(request: NextRequest): Promise<{
       return null;
     }
 
-    // Validate with Supabase
-    const { createClient } = await import('@supabase/supabase-js');
-    const supabase = createClient(
-      process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
-    );
-
-    const { data: { user }, error } = await supabase.auth.getUser(token);
-
-    if (error || !user) {
-      console.warn('[Auth] Invalid or expired token:', error?.message);
-      return null;
-    }
-
-    if (!user.email) {
-      console.warn('[Auth] User has no email');
-      return null;
-    }
-
-    console.log(`[Auth] User authenticated: ${user.email}`);
-    return {
-      email: user.email,
-      id: user.id
-    };
+    // Use the database-agnostic auth adapter to validate the token
+    return await authAdapter.getUserFromToken(token);
   } catch (error) {
     console.error('[Auth] Error validating token:', error);
     return null;
