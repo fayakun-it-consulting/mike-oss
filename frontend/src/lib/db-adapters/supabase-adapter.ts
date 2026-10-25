@@ -78,7 +78,7 @@ export class SupabaseAdapter {
               }),
               data: null
             })
-          });
+          })
         };
       }
       
