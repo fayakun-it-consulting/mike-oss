@@ -3,13 +3,14 @@
  * This implements the database connection interface for PocketBase.
  */
 
-import { DatabaseService, DatabaseConfig } from "./database-abstraction";
+import { DatabaseService } from "./database-abstraction";
+import { DatabaseConfiguration } from "./database-config";
 
 export class PocketBaseDatabaseConnection implements DatabaseService {
-  private config: DatabaseConfig;
+  private config: DatabaseConfiguration;
   private isConnected: boolean = false;
 
-  constructor(config: DatabaseConfig) {
+  constructor(config: DatabaseConfiguration) {
     this.config = config;
   }
 
@@ -101,7 +102,7 @@ export class PocketBaseDatabaseFactory {
   /**
    * Create a PocketBase database connection
    */
-  static create(config: DatabaseConfig): PocketBaseDatabaseConnection {
+  static create(config: DatabaseConfiguration): PocketBaseDatabaseConnection {
     return new PocketBaseDatabaseConnection(config);
   }
 
@@ -112,7 +113,7 @@ export class PocketBaseDatabaseFactory {
     const type = 'pocketbase';
     const url = process.env.DATABASE_URL;
     
-    const config: DatabaseConfig = {
+    const config: DatabaseConfiguration = {
       type,
       url
     };

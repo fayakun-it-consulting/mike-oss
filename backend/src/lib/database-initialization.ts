@@ -4,7 +4,7 @@
  */
 
 import { DatabaseService } from "./database-abstraction";
-import { DatabaseConfig } from "./database-config";
+import { DatabaseConfiguration } from "./database-config";
 import { PostgreSqlDatabaseConnection } from "./postgresql-connection";
 import { PocketBaseDatabaseConnection } from "./pocketbase-connection";
 import { DatabaseServiceFactory } from "./database-service-factory";
@@ -257,7 +257,7 @@ export class DatabaseInitializationService {
 
 // Database initialization factory for Pandino components
 export class DatabaseInitializationFactory {
-  static create(config: DatabaseConfig): DatabaseInitializationService {
+  static create(config: DatabaseConfiguration): DatabaseInitializationService {
     const service = DatabaseServiceFactory.create(config);
     return new DatabaseInitializationService(service);
   }
@@ -275,7 +275,7 @@ export class DatabaseInitializationFactory {
 
 // Export for Pandino components
 export const DatabaseInit = {
-  create: (config: DatabaseConfig) => DatabaseInitializationFactory.create(config),
+  create: (config: DatabaseConfiguration) => DatabaseInitializationFactory.create(config),
   createFromEnvironment: () => DatabaseInitializationFactory.createFromEnvironment(),
   createDefault: () => DatabaseInitializationFactory.createDefault()
 };
@@ -284,7 +284,7 @@ export const DatabaseInit = {
 export class DatabaseComponent {
   private initService: DatabaseInitializationService;
 
-  constructor(config: DatabaseConfig) {
+  constructor(config: DatabaseConfiguration) {
     this.initService = DatabaseInit.create(config);
   }
 

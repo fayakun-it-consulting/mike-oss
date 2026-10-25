@@ -18,6 +18,12 @@ export interface DatabaseTransaction {
 
 // Common database service interface
 export interface DatabaseService {
+
+  /**
+   * Init
+   */
+  init(): Promise<void>;
+
   /**
    * Execute a single query
    */
@@ -42,6 +48,11 @@ export interface DatabaseService {
    * Rollback a transaction
    */
   rollback(): Promise<void>;
+  
+  /**
+   * Close the database connection
+   */
+  testConnection(): Promise<boolean>;
   
   /**
    * Get database metadata

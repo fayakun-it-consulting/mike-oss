@@ -55,6 +55,7 @@ export interface DatabaseService {
    * Close the database connection
    */
   close(): Promise<void>;
+
 }
 
 // Generic database abstraction for Pandino OSGi components

@@ -4,7 +4,7 @@
  */
 
 import { DatabaseService } from "./database-abstraction";
-import { DatabaseConfig } from "./database-config";
+import { DatabaseConfiguration } from "./database-config";
 import { PostgreSqlDatabaseConnection } from "./postgresql-connection";
 import { PocketBaseDatabaseConnection } from "./pocketbase-connection";
 
@@ -12,7 +12,7 @@ export class DatabaseServiceFactory {
   /**
    * Create a database service based on configuration
    */
-  static create(config: DatabaseConfig): DatabaseService {
+  static create(config: DatabaseConfiguration): DatabaseService {
     switch (config.type) {
       case 'postgresql':
         return new PostgreSqlDatabaseConnection(config);
@@ -31,7 +31,7 @@ export class DatabaseServiceFactory {
     const type = process.env.DB_TYPE as 'postgresql' | 'pocketbase' || 'postgresql';
     const url = process.env.DATABASE_URL;
     
-    const config: DatabaseConfig = {
+    const config: DatabaseConfiguration = {
       type,
       url
     };
@@ -46,7 +46,7 @@ export class DatabaseServiceFactory {
     const type = 'postgresql'; // Default to PostgreSQL
     const url = process.env.DATABASE_URL;
     
-    const config: DatabaseConfig = {
+    const config: DatabaseConfiguration = {
       type,
       url
     };

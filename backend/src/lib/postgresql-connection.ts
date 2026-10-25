@@ -4,16 +4,16 @@
  */
 
 import { DatabaseService } from "./database-abstraction";
-import { DatabaseConfig } from "./database-config";
+import { DatabaseConfiguration } from "./database-config";
 
 // Import necessary PostgreSQL libraries (in a real implementation, this would be injected)
 // For this example, we'll simulate the connection functionality
 export class PostgreSqlDatabaseConnection implements DatabaseService {
-  private config: DatabaseConfig;
+  private config: DatabaseConfiguration;
   private connection: any;
   private isInitialized: boolean = false;
 
-  constructor(config: DatabaseConfig) {
+  constructor(config: DatabaseConfiguration) {
     this.config = config;
   }
 
@@ -179,16 +179,16 @@ export class PostgreSqlDatabaseConnection implements DatabaseService {
  * PostgreSQL database factory for Pandino components
  */
 export class PostgreSqlDatabaseFactory {
-  static create(config: DatabaseConfig): PostgreSqlDatabaseConnection {
+  static create(config: DatabaseConfiguration): PostgreSqlDatabaseConnection {
     const connection = new PostgreSqlDatabaseConnection(config);
     return connection;
   }
   
   static createFromEnvironment(): PostgreSqlDatabaseConnection {
-    const type = process.env.DB_TYPE as 'sqlite' | 'postgresql' || 'sqlite';
+    const type = process.env.DB_TYPE as 'postgresql' || 'sqlite';
     const url = process.env.DATABASE_URL;
     
-    const config: DatabaseConfig = {
+    const config: DatabaseConfiguration = {
       type,
       url
     };
@@ -199,6 +199,6 @@ export class PostgreSqlDatabaseFactory {
 
 // Export for easy consumption in Pandino components
 export const PostgreSql = {
-  create: (config: DatabaseConfig) => PostgreSqlDatabaseFactory.create(config),
+  create: (config: DatabaseConfiguration) => PostgreSqlDatabaseFactory.create(config),
   createFromEnvironment: () => PostgreSqlDatabaseFactory.createFromEnvironment()
 };
