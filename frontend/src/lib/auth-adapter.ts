@@ -26,11 +26,6 @@ export interface AuthAdapter {
     id: string;
   } | null>;
 
-  getUser(): Promise<{
-    email: string;
-    id: string;
-  } | null>;
-
   getCurrentSession(): Promise<AdapterSession | null>;
 
   /**
@@ -52,14 +47,6 @@ export const authAdapter: AuthAdapter = {
   },
   
   async getUserFromToken(token: string): Promise<{
-    email: string;
-    id: string;
-  } | null> {
-    // Default implementation
-    return null;
-  },
-
-  async getUser(): Promise<{
     email: string;
     id: string;
   } | null> {

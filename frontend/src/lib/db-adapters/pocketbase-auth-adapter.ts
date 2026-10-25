@@ -18,18 +18,6 @@ export class PocketBaseAuthAdapter implements AuthAdapter {
     id: string;
   } | null> {
     try{
-      return this.getUser();
-    } catch (error) {
-      console.error('[Auth] Error validating token:', error);
-      return null;
-    }
-  }
-
-  async getUser(): Promise<{
-    email: string;
-    id: string;
-  } | null> {
-    try{
       // For PocketBase, token validation would typically be done on the backend
       // This frontend method returns null since backend validation is expected
       const pb = new PocketBase('http://127.0.0.1:8090');
@@ -47,6 +35,7 @@ export class PocketBaseAuthAdapter implements AuthAdapter {
       return null;
     }
   }
+
   async getToken(): Promise<string | null> {
     // For PocketBase, token validation would typically be done on the backend
       // This frontend method returns null since backend validation is expected

@@ -19,18 +19,6 @@ export class SupabaseAuthAdapter implements AuthAdapter {
     id: string;
   } | null> {
     try {
-      return this.getUser();
-    } catch (error) {
-      console.error('[Auth] Error validating token:', error);
-      return null;
-    }
-  }
-
-  async getUser(): Promise<{
-    email: string;
-    id: string;
-  } | null> {
-    try{
       // Validate with Supabase
       const { createClient } = await import('@supabase/supabase-js');
       const supabase = createClient(
@@ -38,7 +26,6 @@ export class SupabaseAuthAdapter implements AuthAdapter {
         process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_DEFAULT_KEY!
       );
 
-      
       const { data, error } = await supabase.auth.getSession();
 
       if (error || !data.session) {
@@ -46,7 +33,7 @@ export class SupabaseAuthAdapter implements AuthAdapter {
         return null;
       }
 
-      const { data: { user }, error: userError } = await supabase.auth.getUser(data.session?.access_token);
+      const { data: { user }, error: userError } = await supabase.auth.getUser(token);
 
       if (error || !user) {
         console.warn('[Auth] Invalid or expired token:', userError?.message);
